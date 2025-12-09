@@ -38,7 +38,7 @@ let agent: SolanaAgentKit | null = null;
 
 function getEffectiveConfig() {
   return {
-    openRouterApiKey: runtimeConfig.openRouterApiKey || process.env.OPENAI_API_KEY || null,
+    openRouterApiKey: runtimeConfig.openRouterApiKey || process.env.OPENROUTER_API_KEY || null,
     rpcUrl: runtimeConfig.rpcUrl || process.env.RPC_URL || null,
     solanaPrivateKey: runtimeConfig.solanaPrivateKey || process.env.SOLANA_PRIVATE_KEY || null,
   };

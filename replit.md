@@ -16,7 +16,7 @@ This project provides a modern React-based web interface for interacting with th
 ### Backend (Express + Solana Agent Kit)
 - **Location**: `server/`
 - **Port**: 3001
-- **Tech Stack**: Express, Solana Agent Kit v2, OpenAI
+- **Tech Stack**: Express, Solana Agent Kit v2, OpenRouter API
 
 ## Features
 
@@ -43,13 +43,17 @@ This project provides a modern React-based web interface for interacting with th
 - Session persistence
 - All toolkit actions available
 
-## Environment Variables Required
+## Environment Variables (Optional)
+
+These can be set via environment variables OR through the in-app Settings page:
 
 ```
-OPENAI_API_KEY=your_openai_key
+OPENROUTER_API_KEY=your_openrouter_api_key
 RPC_URL=your_solana_rpc_url
 SOLANA_PRIVATE_KEY=your_base58_encoded_private_key
 ```
+
+**Note**: The Settings page allows users to configure API keys and select AI models dynamically without environment variables.
 
 ## Project Structure
 
@@ -65,7 +69,8 @@ SOLANA_PRIVATE_KEY=your_base58_encoded_private_key
 │   │   │   ├── ChatPage.tsx
 │   │   │   ├── TokensPage.tsx
 │   │   │   ├── NFTsPage.tsx
-│   │   │   └── ToolsPage.tsx
+│   │   │   ├── ToolsPage.tsx
+│   │   │   └── SettingsPage.tsx
 │   │   ├── App.tsx
 │   │   └── main.tsx
 │   └── vite.config.ts
@@ -78,6 +83,9 @@ SOLANA_PRIVATE_KEY=your_base58_encoded_private_key
 ## API Endpoints
 
 - `GET /api/status` - Check agent configuration status
+- `GET /api/config` - Get current configuration status (booleans only)
+- `POST /api/config` - Update runtime configuration
+- `GET /api/models` - Fetch available AI models from OpenRouter
 - `GET /api/wallet` - Get wallet address and balance
 - `GET /api/actions` - List all available actions
 - `POST /api/chat` - AI chat with streaming responses
