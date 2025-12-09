@@ -315,7 +315,7 @@ app.post("/api/execute-action", async (req, res) => {
 });
 
 const isProduction = process.env.NODE_ENV === "production";
-const PORT = isProduction ? 5000 : (process.env.PORT || 3001);
+const PORT = Number(process.env.PORT || (isProduction ? 5000 : 3001));
 
 if (isProduction) {
   const clientDistPath = path.join(__dirname, "..", "client", "dist");
