@@ -1,7 +1,7 @@
-import { MessageSquare, Wallet, Image, Wrench, LayoutDashboard, Zap } from 'lucide-react'
+import { MessageSquare, Wallet, Image, Wrench, LayoutDashboard, Zap, Settings } from 'lucide-react'
 import './Sidebar.css'
 
-type Page = 'dashboard' | 'chat' | 'tokens' | 'nfts' | 'tools'
+type Page = 'dashboard' | 'chat' | 'tokens' | 'nfts' | 'tools' | 'settings'
 
 interface SidebarProps {
   currentPage: Page
@@ -15,6 +15,7 @@ const menuItems = [
   { id: 'tokens' as Page, label: 'Tokens', icon: Wallet },
   { id: 'nfts' as Page, label: 'NFTs', icon: Image },
   { id: 'tools' as Page, label: 'Tools', icon: Wrench },
+  { id: 'settings' as Page, label: 'Settings', icon: Settings },
 ]
 
 export default function Sidebar({ currentPage, onPageChange, isConfigured }: SidebarProps) {
@@ -35,11 +36,12 @@ export default function Sidebar({ currentPage, onPageChange, isConfigured }: Sid
         {menuItems.map((item) => (
           <button
             key={item.id}
-            className={`nav-item ${currentPage === item.id ? 'active' : ''}`}
+            className={`nav-item ${currentPage === item.id ? 'active' : ''} ${item.id === 'settings' && !isConfigured ? 'has-warning' : ''}`}
             onClick={() => onPageChange(item.id)}
           >
             <item.icon size={20} />
             <span>{item.label}</span>
+            {item.id === 'settings' && !isConfigured && <span className="warning-dot"></span>}
           </button>
         ))}
       </nav>

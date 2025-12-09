@@ -105,3 +105,25 @@
   color: var(--text-secondary);
   text-align: center;
 }
+
+.nav-item.has-warning {
+  position: relative;
+}
+
+.warning-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--warning, #ffa502);
+  margin-left: auto;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}

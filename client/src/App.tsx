@@ -6,9 +6,10 @@ import ChatPage from './pages/ChatPage'
 import TokensPage from './pages/TokensPage'
 import NFTsPage from './pages/NFTsPage'
 import ToolsPage from './pages/ToolsPage'
+import SettingsPage from './pages/SettingsPage'
 import './App.css'
 
-type Page = 'dashboard' | 'chat' | 'tokens' | 'nfts' | 'tools'
+type Page = 'dashboard' | 'chat' | 'tokens' | 'nfts' | 'tools' | 'settings'
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('dashboard')
@@ -34,6 +35,8 @@ function App() {
         return <NFTsPage status={status} />
       case 'tools':
         return <ToolsPage status={status} />
+      case 'settings':
+        return <SettingsPage />
       default:
         return <Dashboard status={status} />
     }

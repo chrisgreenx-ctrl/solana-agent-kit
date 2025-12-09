@@ -20,25 +20,50 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+interface RuntimeConfig {
+  openRouterApiKey: string | null;
+  rpcUrl: string | null;
+  solanaPrivateKey: string | null;
+  model: string | null;
+}
+
+let runtimeConfig: RuntimeConfig = {
+  openRouterApiKey: null,
+  rpcUrl: null,
+  solanaPrivateKey: null,
+  model: null,
+};
+
 let agent: SolanaAgentKit | null = null;
 
+function getEffectiveConfig() {
+  return {
+    openRouterApiKey: runtimeConfig.openRouterApiKey || process.env.OPENAI_API_KEY || null,
+    rpcUrl: runtimeConfig.rpcUrl || process.env.RPC_URL || null,
+    solanaPrivateKey: runtimeConfig.solanaPrivateKey || process.env.SOLANA_PRIVATE_KEY || null,
+  };
+}
+
 function initializeAgent(): SolanaAgentKit | null {
-  const requiredVars = ["OPENAI_API_KEY", "RPC_URL", "SOLANA_PRIVATE_KEY"];
-  const missingVars = requiredVars.filter((v) => !process.env[v]);
+  const config = getEffectiveConfig();
   
-  if (missingVars.length > 0) {
-    console.warn("Missing env vars:", missingVars.join(", "));
+  if (!config.openRouterApiKey || !config.rpcUrl || !config.solanaPrivateKey) {
+    const missing = [];
+    if (!config.openRouterApiKey) missing.push("OpenRouter API Key");
+    if (!config.rpcUrl) missing.push("RPC URL");
+    if (!config.solanaPrivateKey) missing.push("Solana Private Key");
+    console.warn("Missing config:", missing.join(", "));
     return null;
   }
 
   try {
     const keyPair = Keypair.fromSecretKey(
-      bs58.decode(process.env.SOLANA_PRIVATE_KEY as string)
+      bs58.decode(config.solanaPrivateKey)
     );
-    const wallet = new KeypairWallet(keyPair, process.env.RPC_URL as string);
+    const wallet = new KeypairWallet(keyPair, config.rpcUrl);
 
-    return new SolanaAgentKit(wallet, process.env.RPC_URL!, {
-      OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    return new SolanaAgentKit(wallet, config.rpcUrl, {
+      OPENAI_API_KEY: config.openRouterApiKey,
     })
       .use(TokenPlugin)
       .use(NFTPlugin);
@@ -49,6 +74,67 @@ function initializeAgent(): SolanaAgentKit | null {
 }
 
 agent = initializeAgent();
+
+app.get("/api/models", async (req, res) => {
+  const config = getEffectiveConfig();
+  const apiKey = config.openRouterApiKey;
+  
+  if (!apiKey) {
+    return res.status(400).json({ error: "OpenRouter API key not configured" });
+  }
+  
+  try {
+    const response = await fetch("https://openrouter.ai/api/v1/models", {
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+      },
+    });
+    const data = await response.json();
+    res.json(data);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get("/api/config", (req, res) => {
+  const config = getEffectiveConfig();
+  res.json({
+    openRouterApiKey: !!config.openRouterApiKey,
+    rpcUrl: !!config.rpcUrl,
+    solanaPrivateKey: !!config.solanaPrivateKey,
+    isFullyConfigured: !!(config.openRouterApiKey && config.rpcUrl && config.solanaPrivateKey),
+    model: runtimeConfig.model || 'openai/gpt-4o',
+  });
+});
+
+app.post("/api/config", (req, res) => {
+  const { openRouterApiKey, rpcUrl, solanaPrivateKey, model } = req.body;
+  
+  if (openRouterApiKey !== undefined) {
+    runtimeConfig.openRouterApiKey = openRouterApiKey || null;
+  }
+  if (rpcUrl !== undefined) {
+    runtimeConfig.rpcUrl = rpcUrl || null;
+  }
+  if (solanaPrivateKey !== undefined) {
+    runtimeConfig.solanaPrivateKey = solanaPrivateKey || null;
+  }
+  if (model !== undefined) {
+    runtimeConfig.model = model;
+  }
+  
+  agent = initializeAgent();
+  
+  const config = getEffectiveConfig();
+  res.json({
+    success: true,
+    openRouterApiKey: !!config.openRouterApiKey,
+    rpcUrl: !!config.rpcUrl,
+    solanaPrivateKey: !!config.solanaPrivateKey,
+    isFullyConfigured: !!(config.openRouterApiKey && config.rpcUrl && config.solanaPrivateKey),
+    agentInitialized: agent !== null,
+  });
+});
 
 app.get("/api/status", (req, res) => {
   const isConfigured = agent !== null;
@@ -108,10 +194,16 @@ app.post("/api/chat", async (req, res) => {
     return res.status(400).json({ error: "Message is required" });
   }
 
+  const config = getEffectiveConfig();
+  if (!config.openRouterApiKey) {
+    return res.status(503).json({ error: "OpenRouter API key not configured" });
+  }
+
   try {
     const tools = createVercelAITools(agent, agent.actions);
-    const openai = createOpenAI({
-      apiKey: process.env.OPENAI_API_KEY as string,
+    const openrouter = createOpenAI({
+      apiKey: config.openRouterApiKey,
+      baseURL: "https://openrouter.ai/api/v1",
     });
 
     let messages = chatSessions.get(sessionId) || [];
@@ -126,8 +218,9 @@ app.post("/api/chat", async (req, res) => {
     res.setHeader("Connection", "keep-alive");
     res.setHeader("X-Session-Id", sessionId);
 
+    const modelId = runtimeConfig.model || 'openai/gpt-4o';
     const response = streamText({
-      model: openai("gpt-4o"),
+      model: openrouter(modelId),
       tools,
       messages,
       system: `You are a helpful Solana blockchain assistant powered by the Solana Agent Kit. You can interact with the Solana blockchain using your available tools.
