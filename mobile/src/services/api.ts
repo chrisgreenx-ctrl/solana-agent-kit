@@ -1,4 +1,19 @@
-const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3001';
+import { Platform } from 'react-native';
+
+const getApiUrl = () => {
+  if (Platform.OS === 'web') {
+    if (typeof window !== 'undefined' && window.location) {
+      const host = window.location.hostname;
+      if (host === 'localhost' || host === '127.0.0.1') {
+        return 'http://localhost:3001';
+      }
+      return `${window.location.protocol}//${window.location.host.replace(':5000', ':3001')}`;
+    }
+  }
+  return process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3001';
+};
+
+const API_URL = getApiUrl();
 
 interface ConfigStatus {
   openRouterApiKey: boolean;
