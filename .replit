@@ -1,7 +1,7 @@
 run = "tsx index.ts"
 entrypoint = "index.ts"
 hidden = [".config", "package-lock.json", "tsconfig.json"]
-modules = ["nodejs-22"]
+modules = ["nodejs-22", "python-3.11"]
 
 [nix]
 channel = "stable-24_05"
@@ -45,6 +45,7 @@ externalPort = 3002
 
 [agent]
 expertMode = true
+integrations = ["github:1.0.0"]
 
 [workflows]
 runButton = "Project"
