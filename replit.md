@@ -1,17 +1,24 @@
 # Solana Agent Kit GUI
 
-A complete web-based GUI suite that leverages all functionality from the Solana Agent Kit v2.
+A complete GUI suite that leverages all functionality from the Solana Agent Kit v2, available as both a web app and mobile app.
 
 ## Overview
 
-This project provides a modern React-based web interface for interacting with the Solana blockchain through the Solana Agent Kit. It includes an AI-powered chat interface and dedicated panels for token and NFT operations.
+This project provides modern interfaces for interacting with the Solana blockchain through the Solana Agent Kit. It includes an AI-powered chat interface and dedicated panels for token and NFT operations.
 
 ## Architecture
 
-### Frontend (React + Vite)
+### Mobile App (Expo React Native)
+- **Location**: `mobile/`
+- **Port**: 5000 (web preview)
+- **Tech Stack**: Expo SDK 52, React Native, React Navigation, TypeScript
+- **Run**: `npm run dev:mobile`
+
+### Web Frontend (React + Vite)
 - **Location**: `client/`
 - **Port**: 5000
 - **Tech Stack**: React 19, TypeScript, TanStack Query, Lucide Icons
+- **Run**: `npm run dev`
 
 ### Backend (Express + Solana Agent Kit)
 - **Location**: `server/`
@@ -59,18 +66,25 @@ SOLANA_PRIVATE_KEY=your_base58_encoded_private_key
 
 ```
 /
-├── client/                 # React frontend
+├── mobile/                 # Expo React Native mobile app
+│   ├── src/
+│   │   ├── screens/       # Screen components
+│   │   │   ├── DashboardScreen.tsx
+│   │   │   ├── ChatScreen.tsx
+│   │   │   ├── TokensScreen.tsx
+│   │   │   ├── NFTsScreen.tsx
+│   │   │   ├── ToolsScreen.tsx
+│   │   │   └── SettingsScreen.tsx
+│   │   ├── services/
+│   │   │   └── api.ts     # API service layer
+│   │   └── theme.ts       # Colors and spacing
+│   ├── App.tsx            # Main app with navigation
+│   ├── app.json           # Expo configuration
+│   └── package.json       # Mobile dependencies
+├── client/                 # React web frontend
 │   ├── src/
 │   │   ├── components/    # Reusable components
-│   │   │   ├── Sidebar.tsx
-│   │   │   └── Sidebar.css
 │   │   ├── pages/         # Page components
-│   │   │   ├── Dashboard.tsx
-│   │   │   ├── ChatPage.tsx
-│   │   │   ├── TokensPage.tsx
-│   │   │   ├── NFTsPage.tsx
-│   │   │   ├── ToolsPage.tsx
-│   │   │   └── SettingsPage.tsx
 │   │   ├── App.tsx
 │   │   └── main.tsx
 │   └── vite.config.ts
@@ -93,14 +107,26 @@ SOLANA_PRIVATE_KEY=your_base58_encoded_private_key
 
 ## Running the Project
 
+### Mobile App (Current Default)
+```bash
+npm run dev:mobile
+```
+Starts the Expo mobile app on port 5000 with the backend on port 3001.
+
+### Web App
 ```bash
 npm run dev
 ```
+Starts the React web frontend on port 5000 with the backend on port 3001.
 
-This starts both the backend (port 3001) and frontend (port 5000) concurrently.
+## Mobile App Configuration
+
+The mobile app uses environment variables for API configuration:
+- `EXPO_PUBLIC_API_URL`: Backend API URL (set in `mobile/.env`)
 
 ## User Preferences
 
 - Dark theme with purple/green accent colors (Solana branding)
 - Responsive design for all screen sizes
 - Minimal loading states with spinners
+- Bottom tab navigation in mobile app
