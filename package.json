@@ -4,12 +4,15 @@
   "description": "Solana Agent Kit v2 GUI - Complete web interface for blockchain operations",
   "main": "server/index.ts",
   "type": "module",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "server": "tsx server/index.ts",
     "client": "cd client && npm run dev",
     "build": "cd client && npm run build",
-    "start": "tsx server/index.ts"
+    "start": "NODE_ENV=production tsx server/index.ts"
   },
   "author": "",
   "license": "ISC",

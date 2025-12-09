@@ -1,5 +1,7 @@
 import express from "express";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
 import NFTPlugin from "@solana-agent-kit/plugin-nft";
 import TokenPlugin from "@solana-agent-kit/plugin-token";
 import { Keypair } from "@solana/web3.js";
@@ -15,6 +17,9 @@ import { createOpenAI } from "@ai-sdk/openai";
 import { streamText, type Message } from "ai";
 
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(cors());
@@ -309,9 +314,24 @@ app.post("/api/execute-action", async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
+const isProduction = process.env.NODE_ENV === "production";
+const PORT = isProduction ? 5000 : (process.env.PORT || 3001);
+
+if (isProduction) {
+  const clientDistPath = path.join(__dirname, "..", "client", "dist");
+  app.use(express.static(clientDistPath));
+  
+  app.get("*", (req, res, next) => {
+    if (req.path.startsWith("/api")) {
+      return next();
+    }
+    res.sendFile(path.join(clientDistPath, "index.html"));
+  });
+}
+
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
+  console.log(`Environment: ${isProduction ? "production" : "development"}`);
   console.log(`Agent configured: ${agent !== null}`);
   if (agent) {
     console.log(`Wallet: ${agent.wallet.publicKey.toString()}`);
