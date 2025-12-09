@@ -113,6 +113,14 @@
   }
   .main-content {
     padding: 16px;
+    padding-top: 72px;
+    width: 100%;
+  }
+  .app {
+    flex-direction: column;
+  }
+  .page-header h1 {
+    font-size: 24px;
   }
 }
 
