@@ -130,3 +130,30 @@ The mobile app uses environment variables for API configuration:
 - Responsive design for all screen sizes
 - Minimal loading states with spinners
 - Bottom tab navigation in mobile app
+
+## Known Limitations
+
+### Plugin Compatibility
+The DeFi, Misc, and Blinks plugins from Solana Agent Kit have compatibility issues with the current Node.js 22 + ESM environment:
+- **Issue**: `@coral-xyz/anchor` package doesn't export `BN` correctly in ESM context
+- **Affected**: `@solana-agent-kit/plugin-defi`, `@solana-agent-kit/plugin-misc`, `@solana-agent-kit/plugin-blinks`
+- **Root cause**: Transitive dependencies (`@meteora-ag/dlmm`, etc.) expect BN export from anchor
+- **Workaround**: Currently using Token and NFT plugins only. DeFi/Misc/Blinks features are accessible via AI Chat natural language commands.
+
+### Active Plugins
+- Token Plugin: Full functionality for token operations
+- NFT Plugin: Full functionality for NFT operations
+
+## Mobile App Screens
+
+The mobile app includes 4 main tabs:
+1. **Dashboard** - Overview and status
+2. **AI Chat** - Natural language blockchain operations
+3. **Actions** - Action Center with 5 categories (Tokens, NFTs, DeFi, Utilities, Blinks)
+4. **Settings** - API configuration
+
+### Additional Screens (via Actions tab)
+- ActionCenterScreen.tsx - Unified hub for all categories
+- DeFiScreen.tsx - DeFi features (guidance to use AI Chat)
+- MiscScreen.tsx - Utilities (prices, domains, airdrops)
+- BlinksScreen.tsx - Games and blinks

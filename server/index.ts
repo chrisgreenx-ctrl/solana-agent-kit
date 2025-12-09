@@ -4,6 +4,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 import NFTPlugin from "@solana-agent-kit/plugin-nft";
 import TokenPlugin from "@solana-agent-kit/plugin-token";
+import DeFiPlugin from "@solana-agent-kit/plugin-defi";
+import MiscPlugin from "@solana-agent-kit/plugin-misc";
 import BlinksPlugin from "@solana-agent-kit/plugin-blinks";
 import { Keypair } from "@solana/web3.js";
 import bs58 from "bs58";
@@ -17,10 +19,10 @@ import { randomUUID } from "node:crypto";
 import { createOpenAI } from "@ai-sdk/openai";
 import { streamText, type Message } from "ai";
 
-dotenv.config();
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+dotenv.config();
 
 const app = express();
 app.use(cors({
@@ -76,6 +78,8 @@ function initializeAgent(): SolanaAgentKit | null {
     })
       .use(TokenPlugin)
       .use(NFTPlugin)
+      .use(DeFiPlugin)
+      .use(MiscPlugin)
       .use(BlinksPlugin);
   } catch (error) {
     console.error("Failed to initialize agent:", error);

@@ -1,11 +1,11 @@
 {
   "name": "solana-agent-kit-gui",
   "version": "1.0.0",
+  "type": "module",
   "description": "Solana Agent Kit v2 GUI - Complete web interface for blockchain operations",
   "main": "server/index.ts",
-  "type": "module",
   "engines": {
-    "node": ">=22.0.0"
+    "node": ">=20.0.0"
   },
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run client\"",
@@ -14,7 +14,8 @@
     "client": "cd client && npm run dev",
     "expo": "cd mobile && npx expo start --web --port 5000",
     "build": "cd client && npm run build",
-    "start": "NODE_ENV=production tsx server/index.ts"
+    "start": "NODE_ENV=production tsx server/index.ts",
+    "postinstall": "node scripts/patch-anchor.mjs"
   },
   "author": "",
   "license": "ISC",
@@ -40,7 +41,8 @@
     "dotenv": "^16.5.0",
     "express": "^4.21.0",
     "node-fetch": "^3.3.1",
-    "solana-agent-kit": "2.0.0-beta.11"
+    "solana-agent-kit": "2.0.0-beta.11",
+    "ts-node": "^10.9.2"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
