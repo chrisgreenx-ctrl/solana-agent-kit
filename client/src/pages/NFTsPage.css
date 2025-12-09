@@ -1,0 +1,67 @@
+.nfts-page {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.nfts-page .tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  padding: 4px;
+  background: var(--bg-secondary);
+  border-radius: 14px;
+  border: 1px solid var(--border-color);
+}
+
+.nfts-page .tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nfts-page .tab:hover {
+  color: var(--text-primary);
+}
+
+.nfts-page .tab.active {
+  background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+  color: white;
+}
+
+.nfts-page .tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.nfts-page .form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.nfts-page .spinning {
+  animation: spin 1s linear infinite;
+}
+
+.nfts-page .alert pre {
+  margin-top: 8px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  overflow-x: auto;
+  font-size: 12px;
+  font-family: monospace;
+  white-space: pre-wrap;
+}

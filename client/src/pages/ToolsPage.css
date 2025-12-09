@@ -1,0 +1,132 @@
+.tools-page {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.tools-page .tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  padding: 4px;
+  background: var(--bg-secondary);
+  border-radius: 14px;
+  border: 1px solid var(--border-color);
+}
+
+.tools-page .tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tools-page .tab:hover {
+  color: var(--text-primary);
+}
+
+.tools-page .tab.active {
+  background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+  color: white;
+}
+
+.tools-page .tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.tools-page .form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.card-description {
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.tool-item {
+  padding: 20px;
+  background: var(--bg-tertiary);
+  border-radius: 12px;
+}
+
+.tool-item h4 {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.tool-item p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.action-card {
+  padding: 16px;
+  background: var(--bg-tertiary);
+  border-radius: 10px;
+}
+
+.action-card h4 {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--accent-purple);
+  word-break: break-word;
+}
+
+.action-card p {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.tools-page .spinning {
+  animation: spin 1s linear infinite;
+}
+
+.tools-page .alert pre {
+  margin-top: 8px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  overflow-x: auto;
+  font-size: 12px;
+  font-family: monospace;
+  white-space: pre-wrap;
+}
+
+@media (max-width: 768px) {
+  .tools-grid,
+  .actions-grid {
+    grid-template-columns: 1fr;
+  }
+}
