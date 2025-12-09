@@ -9,8 +9,10 @@
   },
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "dev:mobile": "concurrently \"npm run server\" \"npm run expo\"",
     "server": "tsx server/index.ts",
     "client": "cd client && npm run dev",
+    "expo": "cd mobile && npx expo start --web --port 5000",
     "build": "cd client && npm run build",
     "start": "NODE_ENV=production tsx server/index.ts"
   },

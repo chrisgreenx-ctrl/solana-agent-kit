@@ -27,14 +27,6 @@ externalPort = 3001
 localPort = 5000
 externalPort = 80
 
-[[ports]]
-localPort = 42379
-externalPort = 3000
-
-[[ports]]
-localPort = 45485
-externalPort = 3002
-
 [agent]
 expertMode = true
 
@@ -48,10 +40,10 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Solana Agent GUI"
+args = "Expo Mobile App"
 
 [[workflows.workflow]]
-name = "Solana Agent GUI"
+name = "Expo Mobile App"
 author = "agent"
 
 [workflows.workflow.metadata]
@@ -59,5 +51,5 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm run dev"
+args = "npm run dev:mobile"
 waitForPort = 5000
