@@ -4,6 +4,9 @@ import path from "path";
 import { fileURLToPath } from "url";
 import NFTPlugin from "@solana-agent-kit/plugin-nft";
 import TokenPlugin from "@solana-agent-kit/plugin-token";
+import DefiPlugin from "@solana-agent-kit/plugin-defi";
+import MiscPlugin from "@solana-agent-kit/plugin-misc";
+import BlinksPlugin from "@solana-agent-kit/plugin-blinks";
 import { Keypair } from "@solana/web3.js";
 import bs58 from "bs58";
 import * as dotenv from "dotenv";
@@ -74,7 +77,10 @@ function initializeAgent(): SolanaAgentKit | null {
       OPENAI_API_KEY: config.openRouterApiKey,
     })
       .use(TokenPlugin)
-      .use(NFTPlugin);
+      .use(NFTPlugin)
+      .use(DefiPlugin)
+      .use(MiscPlugin)
+      .use(BlinksPlugin);
   } catch (error) {
     console.error("Failed to initialize agent:", error);
     return null;
@@ -189,6 +195,95 @@ app.get("/api/actions", (req, res) => {
   res.json({ actions });
 });
 
+const ACTION_CATEGORIES: Record<string, string[]> = {
+  token: [
+    'TRANSFER', 'DEPLOY_TOKEN', 'GET_BALANCE', 'BALANCE', 'FETCH_PRICE', 'STAKE',
+    'GET_TOKEN_DATA', 'TOKEN_DATA', 'TOKEN_BALANCE', 'TOKEN_BALANCES',
+    'BURN_TOKENS', 'CLOSE_EMPTY_TOKEN_ACCOUNTS', 'CREATE_ORCA_SINGLE_SIDED_WHIRLPOOL',
+  ],
+  nft: [
+    'DEPLOY_COLLECTION', 'MINT_NFT', 'LIST_NFT_FOR_SALE', 'CANCEL_NFT_LISTING',
+    'GET_ASSETS_BY_CREATOR', 'GET_ASSETS_BY_AUTHORITY', 'SEARCH_ASSETS',
+    'GET_ASSET', 'TENSOR_LIST', 'TENSOR_BUY', 'TENSOR_CANCEL_LISTING',
+  ],
+  defi: [
+    'TRADE', 'SWAP', 'JUPITER_SWAP', 'LEND', 'BORROW', 'REPAY',
+    'PROVIDE_LIQUIDITY', 'REMOVE_LIQUIDITY', 'RAYDIUM_CREATE_AMM',
+    'RAYDIUM_CREATE_CLMM', 'RAYDIUM_CREATE_CPMM', 'ORCA_CREATE_POOL',
+    'ORCA_OPEN_POSITION', 'ORCA_CLOSE_POSITION', 'METEORA_CREATE_POOL',
+    'FLASH_OPEN_TRADE', 'FLASH_CLOSE_TRADE', 'DRIFT_DEPOSIT', 'DRIFT_WITHDRAW',
+  ],
+  misc: [
+    'REQUEST_FUNDS', 'REQUEST_FAUCET_FUNDS', 'GET_TPS', 'GET_CURRENT_SLOT',
+    'GET_BLOCK_HEIGHT', 'GET_EPOCH', 'AIRDROP', 'COMPRESS_SPL_TOKEN',
+    'CREATE_MEMO', 'RESOLVE_DOMAIN', 'REGISTER_DOMAIN', 'GET_DOMAIN',
+    'GET_ALL_DOMAINS', 'GET_PRIMARY_DOMAIN', 'TIPLINK_CREATE', 'TIPLINK_DEPOSIT',
+  ],
+  blinks: [
+    'CREATE_BLINK', 'EXECUTE_BLINK', 'GET_BLINK', 'BLINK_ACTION',
+  ],
+};
+
+app.get("/api/actions/categories", (req, res) => {
+  if (!agent) {
+    return res.status(503).json({ error: "Agent not configured" });
+  }
+
+  try {
+    const allActions = agent.actions.map((action) => ({
+      name: action.name,
+      description: action.description,
+      similes: action.similes,
+    }));
+
+    const categorized: Record<string, typeof allActions> = {
+      token: [],
+      nft: [],
+      defi: [],
+      misc: [],
+      blinks: [],
+      uncategorized: [],
+    };
+
+    for (const action of allActions) {
+      const actionNameUpper = action.name.toUpperCase();
+      let found = false;
+
+      for (const [category, patterns] of Object.entries(ACTION_CATEGORIES)) {
+        if (patterns.some(pattern => 
+          actionNameUpper === pattern || 
+          actionNameUpper.includes(pattern) ||
+          pattern.includes(actionNameUpper)
+        )) {
+          categorized[category].push(action);
+          found = true;
+          break;
+        }
+      }
+
+      if (!found) {
+        categorized.uncategorized.push(action);
+      }
+    }
+
+    res.json({
+      categories: categorized,
+      totalActions: allActions.length,
+      summary: {
+        token: categorized.token.length,
+        nft: categorized.nft.length,
+        defi: categorized.defi.length,
+        misc: categorized.misc.length,
+        blinks: categorized.blinks.length,
+        uncategorized: categorized.uncategorized.length,
+      },
+    });
+  } catch (error: any) {
+    console.error("Categories error:", error);
+    res.status(500).json({ error: error.message || "Failed to get action categories" });
+  }
+});
+
 const chatSessions: Map<string, Message[]> = new Map();
 
 app.post("/api/chat", async (req, res) => {
@@ -234,10 +329,11 @@ app.post("/api/chat", async (req, res) => {
       system: `You are a helpful Solana blockchain assistant powered by the Solana Agent Kit. You can interact with the Solana blockchain using your available tools.
 
 Available capabilities:
-- Token Operations: Check balances, transfer tokens, swap tokens via Jupiter, fetch prices
-- NFT Operations: Deploy collections, mint NFTs, list for sale on Tensor, search assets by creator
-- Trading: Use TRADE action for Jupiter swaps between tokens
-- Wallet Management: Get addresses, request faucet funds, check network TPS
+- Token Operations: Check balances, transfer tokens, deploy tokens, stake, burn tokens, fetch prices
+- NFT Operations: Deploy collections, mint NFTs, list for sale on Tensor, search assets by creator/authority
+- DeFi Operations: Trade/swap via Jupiter, provide liquidity on Orca/Raydium/Meteora, lending via Drift, flash trades
+- Misc Operations: Request faucet funds, get network TPS/slot/epoch, domain operations, create memos, tiplinks
+- Blinks: Create and execute Solana Actions (Blinks)
 
 When a user asks about blockchain operations, use the appropriate tools. Be concise and helpful.
 If you encounter errors, explain them clearly and suggest alternatives.
