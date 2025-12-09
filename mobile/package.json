@@ -6,7 +6,11 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "build:android": "eas build --platform android --profile preview",
+    "build:android:prod": "eas build --platform android --profile production",
+    "build:ios": "eas build --platform ios --profile preview",
+    "build:local": "eas build --platform android --profile preview --local"
   },
   "dependencies": {
     "@expo/metro-runtime": "~4.0.1",
@@ -26,6 +30,7 @@
   "devDependencies": {
     "@babel/core": "^7.24.0",
     "@types/react": "~18.3.12",
+    "eas-cli": "^16.28.0",
     "typescript": "^5.3.0"
   },
   "private": true

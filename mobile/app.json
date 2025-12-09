@@ -21,13 +21,16 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0f0f23"
       },
-      "package": "com.solanaagent.mobile"
+      "package": "com.solanaagent.mobile",
+      "permissions": ["android.permission.INTERNET"]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "apiUrl": "https://your-replit-url.replit.app"
+      "eas": {
+        "projectId": "your-project-id"
+      }
     }
   }
 }
