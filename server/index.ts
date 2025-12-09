@@ -4,8 +4,6 @@ import path from "path";
 import { fileURLToPath } from "url";
 import NFTPlugin from "@solana-agent-kit/plugin-nft";
 import TokenPlugin from "@solana-agent-kit/plugin-token";
-import DefiPlugin from "@solana-agent-kit/plugin-defi";
-import MiscPlugin from "@solana-agent-kit/plugin-misc";
 import BlinksPlugin from "@solana-agent-kit/plugin-blinks";
 import { Keypair } from "@solana/web3.js";
 import bs58 from "bs58";
@@ -78,8 +76,6 @@ function initializeAgent(): SolanaAgentKit | null {
     })
       .use(TokenPlugin)
       .use(NFTPlugin)
-      .use(DefiPlugin)
-      .use(MiscPlugin)
       .use(BlinksPlugin);
   } catch (error) {
     console.error("Failed to initialize agent:", error);
